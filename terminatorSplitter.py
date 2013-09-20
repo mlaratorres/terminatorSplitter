@@ -63,7 +63,7 @@ def partelo(restantes, padre, ordenParaMiPadre, tipoDeSplit):
 	if (restantes == 1):
 		fw.write("    [[[terminal" + str(miNumero) + "]]]\n")
 		fw.write("      profile = default\n")
-		fw.write("      command = " + COMANDOBASE + listaServidores.pop() + "\n")
+		fw.write("      command = " + COMANDOBASE + listaServidores.pop() + ";bash\n")
 		fw.write("      group = grupoTrabajo\n")
 		fw.write("      type = Terminal\n")
 		fw.write("      order = " + str(ordenParaMiPadre) + "\n")
