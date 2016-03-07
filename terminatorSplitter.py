@@ -14,9 +14,14 @@ NUMEROQUELLEVA=1
 COMANDOBASE="ssh "
 USUARIOCOMANDOBASE=None
 PATHFICHEROCLAVE=None
+DELIMITADOR="_@_"
 
 def usage():
 	sys.stderr.write("USAGE: " + sys.argv[0] + " [-l nombreUsuario][-i ficheroClavePrivada] servidor1 servidor2 ... servidorN\n")
+	sys.stderr.write("\n")
+	sys.stderr.write("Puedes usar una sintaxis especial para que las máqunas estén en grupos diferentes:\n")
+	sys.stderr.write("\t - " + sys.argv[0] + " grupo1" + DELIMITADOR + "nombreMaquina1 grupo1" + DELIMITADOR + "nombreMaquina2 nombreMaquina3\n" )
+	sys.stderr.write("\t Creará 3 separaciones, Maquína1 y Maquina2 pertenecerán al grupo grupo1 y Maquina3 al grupo por defecto\n")
 	sys.stderr.write("\n")
 	sys.stderr.write("Se recomienda no poner demasiados servidores para evitar problemas de visualización\n")
 	sys.stderr.write("Es necesario tener el fichero \"config\" de terminator, por defecto en $HOME/.config/terminator/config.\n")
@@ -60,11 +65,27 @@ def partelo(restantes, padre, ordenParaMiPadre, tipoDeSplit):
 	global fw
 	miNumero=NUMEROQUELLEVA
 	NUMEROQUELLEVA = NUMEROQUELLEVA + 1
+
 	if (restantes == 1):
+		servidorAux = listaServidores.pop()
+		# si existe el delimitador lo tratamos para coger el nombre como grupo
+		if servidorAux.find(DELIMITADOR)!=-1:
+			grupoAux=servidorAux.split(DELIMITADOR)[0]
+			# si en lo que nos queda, hay @ es porque lleva usuario con el servidor
+			if grupoAux.find('@')!=-1:
+				grupo=grupoAux.split('@')[1]
+				servidor=str.join('@',[grupoAux.split('@')[0],servidorAux.split(DELIMITADOR)[1]])
+			else:
+				grupo=grupoAux
+				servidor=servidorAux.split(DELIMITADOR)[1]
+		else:
+			grupo="grupoTrabajo"
+			servidor=servidorAux
+
 		fw.write("    [[[terminal" + str(miNumero) + "]]]\n")
 		fw.write("      profile = default\n")
-		fw.write("      command = " + COMANDOBASE + listaServidores.pop() + ";bash\n")
-		fw.write("      group = grupoTrabajo\n")
+		fw.write("      command = " + COMANDOBASE + servidor + ";bash\n")
+		fw.write("      group = " + grupo + "\n")
 		fw.write("      type = Terminal\n")
 		fw.write("      order = " + str(ordenParaMiPadre) + "\n")
 		fw.write("      parent = " + padre + "\n")
